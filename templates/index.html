@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Visualizer</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+</head>
+<body>
+    <form action= "graph/upload_file" method="POST"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" accept=".csv" name="csv_file">
+        <input type="submit" value="Upload">
+    </form>
+    
+    <div class="csv_data" >
+        {% if data %}
+            <h2>CSV_data</h2>
+            <!-- |safe disables automatic escaping -->
+            {{data.csv_data_table|safe}}            
+        {% else %}
+            <h2>No data</h2>
+        {% endif %}
+    </div>
+
+    {% if data %}
+    <div class="createChart">
+        <form action="chart" method="POST">
+            {% csrf_token %}
+            <h2>Create graphs</h2>
+            <div class="form_field"></div>
+            <div class="form_field">
+                <label for="x-data">select x-column</label>
+                <select class="form_field_select"name="x-data" id="x-data">
+                {% for col in data.csv_columns %}
+                    <option  name=x-data value = {{col}}>{{col}}</option>
+                {% endfor%}
+            </select><br>
+            </div>
+            <div class="form_field">
+                <label for="y-data">select y-column</label>
+                <select class="form_field_select" name="y-data" id="y-data">
+                {% for col in data.csv_columns %}
+                    <option name=y-data value = "{{col}}">{{col}}</option>
+                {% endfor%}
+                </select><br>
+            </div>
+            <div class="chart_title">
+                <label for="title">Chart title</label>
+                <input type="text" name="title" id="title">
+            </div>
+            <div class="form_field">
+            <input  type="submit" value="Generate chart">
+            </div>
+        </form>        
+    </div> 
+    {% endif %}    
+</body>
+</html>
